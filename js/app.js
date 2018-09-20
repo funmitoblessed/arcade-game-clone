@@ -25,11 +25,10 @@ Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
-
     if (this.x < 500) {
         this.x += this.speed * dt + Math.floor(Math.random() * 5);
     } else {
-        this.x = -50;
+        this.x = -100;
     }
 
 };
@@ -57,6 +56,15 @@ Player.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
+    for (const enemy of allEnemies) {
+        if ((this.x < enemy.x + 80) &&
+            (this.x + 80 > enemy.x) &&
+            (this.y < enemy.y + 60) &&
+            (60 + this.y > enemy.y)) {
+            resetPlayer();
+        }
+    }
+
 };
 
 // render method for the Player class
@@ -80,36 +88,37 @@ Player.prototype.handleInput = function(key) {
 
 // player scoring method. Adds 1 to the score once the player reaches the river
 Player.prototype.score = function(key) {
-    if ((key === 'up') && (this.y === -10)) {
-        this.x = 200;
-        this.y = 410;
+    if (this.y <= 0) {
+        if ((key === 'up') && (this.y === -10)) {
+            this.x = 200;
+            this.y = 410;
+        }
         gameScore++;
         scoreHolder.innerHTML = gameScore;
     }
 };
 
-// reset functionality. sets score to zero if player is hit
-Player.prototype.reset = function(key) {
-    if ((key === 'up') && (this.y === -10)) {
-        this.x = 200;
-        this.y = 410;
-    }
-};
+function resetPlayer() {
+    player.x = 200;
+    player.y = 410;
+    gameScore = 0;
+    scoreHolder.innerHTML = gameScore;
+}
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 
-let player = new Player(200, 410); // pass in initial position
+// Instantiate player with default position
+let player = new Player(200, 410);
 
 // generate some random numbers
-let randOne = Math.floor(Math.random() * 150);
-let randTwo = Math.floor(Math.random() * 100);
-let randThree = Math.floor(Math.random() * 230);
-let randFour = Math.floor(Math.random() * 420);
+let randOne = Math.floor(Math.random() * 200);
+let randTwo = Math.floor(Math.random() * 200);
+let randThree = Math.floor(Math.random() * 200);
+let randFour = Math.floor(Math.random() * 200);
 
-
-// create new instances of enemy with random values of speed and x-position
+// create new instances of enemies with random x-position and speed and fixed y
 let allEnemies = [new Enemy(randOne, 230, randThree),
     new Enemy(randTwo, 140, randOne),
     new Enemy(randThree, 310, randFour),
@@ -126,9 +135,8 @@ document.addEventListener('keyup', function(e) {
         40: 'down'
     };
 
-    player.handleInput(allowedKeys[e.keyCode]);
-    player.score(allowedKeys[e.keyCode]);
-    player.reset(allowedKeys[e.keyCode]);
+    player.handleInput(allowedKeys[e.which]);
+    player.score(allowedKeys[e.which]);
 });
 
-console.log(allEnemies, player);
+console.log(allEnemies[0], allEnemies[1], allEnemies[2], allEnemies[3], player);
